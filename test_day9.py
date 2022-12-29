@@ -123,4 +123,29 @@ def test_sample():
     rope.move_h(RIGHT,2)
     assert(len(rope.tail_visited_positions()) == 13)
 
-    
+
+def test_sample_size10_simple():
+    rope = Rope(size=10)
+    rope.move_h(RIGHT,4)
+    rope.move_v(UP,4)
+    rope.move_h(LEFT,3)
+    rope.move_v(DOWN,1)
+    rope.move_h(RIGHT,4)
+    rope.move_v(DOWN,1)
+    rope.move_h(LEFT,5)
+    rope.move_h(RIGHT,2)
+    assert(len(rope.tail_visited_positions()) == 1)
+
+def test_sample_size10_advanced():
+    rope = Rope(size=10)
+    moves = """R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20
+"""
+    rope.exec_moves(moves)
+    assert(len(rope.tail_visited_positions()) == 36)
