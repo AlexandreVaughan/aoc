@@ -25,3 +25,32 @@ treb7uchet"""
     result = calibration_sum(test_string)
     assert result == 142
 
+def test_1line_letterednumbers():
+    result = get_calibration_value("two1nine")
+    assert result == 29
+    result = get_calibration_value("eightwothree")
+    assert result == 83
+    result = get_calibration_value("abcone2threexyz")
+    assert result == 13
+    result = get_calibration_value("xtwone3four")
+    assert result == 24
+    result = get_calibration_value("4nineeightseven2")
+    assert result == 42
+    result = get_calibration_value("zoneight234")
+    assert result == 14    
+    result = get_calibration_value("7pqrstsixteen")
+    assert result == 76
+    result = get_calibration_value("fiveight")
+    assert result == 58
+    
+
+def test_several_lines_letterednumbers():
+    test_string = """two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen"""
+    result = calibration_sum(test_string)
+    assert result == 281
