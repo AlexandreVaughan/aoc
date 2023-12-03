@@ -11,8 +11,10 @@ class Engine:
     def add_symbol(self,coords,value):
         self.symbol_map[coords] = value
 
-    def has_symbol(self,column,line):
-        return (column,line) in self.symbol_map
+    def symbol(self,column,line):
+        if not (column,line) in self.symbol_map:
+            return ""
+        return self.symbol_map[(column,line)]
     
     def serial(self,column,line):
         if not (column,line) in self.serial_map:
@@ -20,9 +22,14 @@ class Engine:
         return self.serial_map[(column,line)]
     
     def is_valid_serial(self,column,line):
+        (_,_,symbol) = self._serial_adjacent_symbol(column,line)
+        return symbol != ''
+
+    
+    def _serial_adjacent_symbol(self,column,line):
         serial = self.serial(column,line)
         if  serial == '':
-            return False
+            return (0,0,"")
         for col_idx in range(column,column+len(serial)):
             adjacent_list = [
                 (col_idx-1,line-1),
@@ -39,9 +46,10 @@ class Engine:
                     continue
                 if (col_adj >= self.line_count or line_adj >= self.line_count):
                     continue
-                if self.has_symbol(col_adj,line_adj):
-                    return True
-        return False
+                symbol = self.symbol(col_adj,line_adj)
+                if symbol != "":
+                    return (col_adj,line_adj,symbol)
+        return (0,0,"")   
     
     def serial_sum(self):
         sum=0
@@ -50,6 +58,31 @@ class Engine:
                 continue
             sum+=int(serial)
         return sum
+    
+    def sum_gear_ratios(self):
+        sum = 0
+        for (column,line) in self.symbol_map.keys():
+            (serial1,serial2) = self.gear(column,line)
+            sum += serial1*serial2
+        return sum
+
+    def gear(self,column,line):
+        symbol = self.symbol(column,line)
+        if symbol != '*':
+            return(0,0)
+        serial_1 = 0
+        serial_2 = 0
+        for (col_serial,line_serial),serial in self.serial_map.items():
+            (col_adj,line_adj,_) = self._serial_adjacent_symbol(col_serial,line_serial)
+            if (col_adj == column and line_adj == line):
+                if serial_1 == 0:
+                    serial_1 = serial
+                else:
+                    serial_2 = serial
+                    break
+        return (int(serial_1),int(serial_2))
+
+        
     
     def load_schematic(self,schematic: str):
         line_idx = 0
@@ -90,3 +123,4 @@ if __name__ == "__main__":
     engine = Engine()
     engine.load_schematic(txt)
     print(engine.serial_sum())
+    print(engine.sum_gear_ratios())

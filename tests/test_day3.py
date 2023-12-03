@@ -5,8 +5,8 @@ def test_simple_engine():
     engine.add_serial((2,2),"124")
     engine.add_serial((8,5),"44")
     engine.add_symbol((8,4),"*")
-    assert not engine.has_symbol(0,0)
-    assert engine.has_symbol(8,4)
+    assert engine.symbol(0,0) == ""
+    assert engine.symbol(8,4) != ""
     assert engine.serial(0,0) == ""
     assert engine.serial(2,2) == "124"
     assert engine.serial(3,2) == ""
@@ -27,8 +27,8 @@ def test_load_engine_schematic():
     engine.load_schematic(schematic)
     assert engine.serial(0,0) == '467'
     assert engine.serial(4,0) == ''
-    assert engine.has_symbol(6,3)
-    assert not engine.has_symbol(6,4)
+    assert engine.symbol(6,3) != ""
+    assert engine.symbol(6,4) == ""
     assert engine.serial(0,4) == '617'
 
 
@@ -97,3 +97,39 @@ def test_serial_sum_2():
 """
     engine.load_schematic(schematic)
     assert engine.serial_sum() == 1270
+
+def test_is_gear():
+    engine = Engine()
+    schematic="""467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..
+"""
+    engine.load_schematic(schematic)
+    (serial1,serial2) = engine.gear(0,0)
+    assert serial1 == 0 and serial2 == 0
+    (serial1,serial2) = engine.gear(3,1)
+    assert serial1 == 467 and serial2 == 35
+    
+
+def test_sum_gear_ratios():
+    engine = Engine()
+    schematic="""467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..
+"""
+    engine.load_schematic(schematic)
+    assert engine.sum_gear_ratios() == 467835
