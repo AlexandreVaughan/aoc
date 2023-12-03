@@ -17,6 +17,12 @@ def test_cubeset_can_contain():
     cubeset = CubeSet("3 green, 4 blue, 15 red")
     assert not max_cubeset.can_contain(cubeset)
 
+def test_cubeset_power():
+    cubeset = CubeSet("3 green, 4 blue, 1 red")
+    assert cubeset.power() == 12
+    cubeset = CubeSet("3 green, 4 blue, 15 red")
+    assert cubeset.power() == 180
+
 def test_game():
     game = Game("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green")
     assert game.id == 1
@@ -31,3 +37,15 @@ def test_game_valid():
     assert game.is_valid(max_cubeset)
     game = Game("Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red")
     assert not game.is_valid(max_cubeset)
+
+def test_game_minimumset():
+    game = Game("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green")
+    min_cubeset = game.minimum_set()
+    assert min_cubeset.cubes["red"] == 4
+    assert min_cubeset.cubes["green"] == 2
+    assert min_cubeset.cubes["blue"] == 6
+    game = Game("Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red")
+    min_cubeset = game.minimum_set()
+    assert min_cubeset.cubes["red"] == 20
+    assert min_cubeset.cubes["green"] == 13
+    assert min_cubeset.cubes["blue"] == 6    

@@ -22,6 +22,12 @@ class CubeSet:
                 return False
         return True
     
+    def power(self):
+        product = 1
+        for val in self.cubes.values():
+            product *= val
+        return product
+    
 class Game:
     def __init__(self, game_results: str) -> None:
         self.id = 0
@@ -46,16 +52,26 @@ class Game:
             if not max_cubeset.can_contain(cubeset):
                 return False
         return True
+    
+    def minimum_set(self):
+        min_set = CubeSet("0 blue, 0 red, 0 green")
+        for cubeset in self.cubesets:
+            for cube_type, cube_count in cubeset.cubes.items():
+                min_set.cubes[cube_type] = max(min_set.cubes[cube_type], cube_count)
+        return min_set
 
 if __name__ == "__main__":
     f = open("D:\\Sources\\sample_projects\\aoc2023\\tests\\day2.txt", "r")
     txt = f.read()
     sum_id = 0
+    sum_powers = 0
     max_cubeset = CubeSet("12 red, 13 green, 14 blue")
     for game_def in txt.splitlines():
         game = Game(game_def)
+        sum_powers += game.minimum_set().power()
         if not game.is_valid(max_cubeset):
             continue
         sum_id += game.id
     print(sum_id)
+    print(sum_powers)
 
