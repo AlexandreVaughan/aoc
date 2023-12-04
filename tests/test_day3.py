@@ -1,5 +1,17 @@
 from day3 import Engine
 
+SCHEMATIC="""467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..
+"""
+
 def test_simple_engine():
     engine = Engine()
     engine.add_serial((2,2),"124")
@@ -13,18 +25,7 @@ def test_simple_engine():
 
 def test_load_engine_schematic():
     engine = Engine()
-    schematic="""467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598..
-"""
-    engine.load_schematic(schematic)
+    engine.load_schematic(SCHEMATIC)
     assert engine.serial(0,0) == '467'
     assert engine.serial(4,0) == ''
     assert engine.symbol(6,3) != ""
@@ -34,18 +35,7 @@ def test_load_engine_schematic():
 
 def test_is_valid_serial():
     engine = Engine()
-    schematic="""467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598..
-"""
-    engine.load_schematic(schematic)
+    engine.load_schematic(SCHEMATIC)
     assert engine.is_valid_serial(0,0)
     assert not engine.is_valid_serial(4,0)
     assert not engine.is_valid_serial(5,0)
@@ -54,18 +44,7 @@ def test_is_valid_serial():
 
 def test_serial_sum():
     engine = Engine()
-    schematic="""467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598..
-"""
-    engine.load_schematic(schematic)
+    engine.load_schematic(SCHEMATIC)
     assert engine.serial_sum() == 4361
 
 def test_serial_sum_2():
@@ -100,18 +79,7 @@ def test_serial_sum_2():
 
 def test_is_gear():
     engine = Engine()
-    schematic="""467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598..
-"""
-    engine.load_schematic(schematic)
+    engine.load_schematic(SCHEMATIC)
     (serial1,serial2) = engine.gear(0,0)
     assert serial1 == 0 and serial2 == 0
     (serial1,serial2) = engine.gear(3,1)
@@ -120,16 +88,5 @@ def test_is_gear():
 
 def test_sum_gear_ratios():
     engine = Engine()
-    schematic="""467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598..
-"""
-    engine.load_schematic(schematic)
+    engine.load_schematic(SCHEMATIC)
     assert engine.sum_gear_ratios() == 467835
