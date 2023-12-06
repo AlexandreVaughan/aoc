@@ -75,7 +75,11 @@ class Almanac:
         if not self.seeds_as_range:
             return min(self.to_location())
         min_value = 2**31
-        intervals = self._to_location_intervals(list(self.seeds))
+        seeds_intervals = []
+        for (start,count) in self.seeds:
+            seeds_intervals.append((start,start+count-1))
+
+        intervals = self._to_location_intervals(seeds_intervals)
         for (start,_) in intervals:
             min_value = min(min_value,start)
         return min_value
@@ -97,8 +101,8 @@ class Almanac:
         value = self._map_value(5, value)
         return self._map_value(6, value)
     
-    def _to_location_intervals(self,seed_range):
-        interval = self._map_intervals(0, seed_range)
+    def _to_location_intervals(self,seeds_intervals):
+        interval = self._map_intervals(0, seeds_intervals)
         interval = self._map_intervals(1, interval)
         interval = self._map_intervals(2, interval)
         interval = self._map_intervals(3, interval)
@@ -126,44 +130,48 @@ class AlmanacMap:
         return value
     
     def map_intervals(self, intervals):
-        computed_ranges = []
+        mapped_intervals = []
         for interval in intervals:
-            (start,count)=interval
-            source_start_val = start
-            source_end_val = start+count
-            current_source_start_val = source_start_val
-            for current_range in self.ranges:
-                current_range_source_start = current_range[1]
-                current_range_dest_start = current_range[0] 
-                current_range_count= current_range[2] 
-                if current_source_start_val >= current_range_source_start+current_range_count:
-                    continue
-                if current_source_start_val < current_range_source_start:
-                    computed_ranges.append((current_source_start_val,current_range_source_start-current_source_start_val))
-                    current_source_start_val = current_range_source_start
-                
-                delta = current_source_start_val-current_range_source_start
-                computed_range_start = current_range_dest_start+delta
-                current_source_end_val = min(source_end_val,current_source_start_val+current_range_count)
-                delta = current_source_end_val-current_range_source_start
-                if delta < 0:
-                    continue
-                computed_range_end = current_range_dest_start+delta
-                computed_ranges.append((computed_range_start,computed_range_end-computed_range_start))
-                current_source_start_val = current_source_end_val
-                if current_source_end_val >= source_end_val:
-                    break
-            if (current_source_start_val < start+count):
-                computed_ranges.append((current_source_start_val,start+count-current_source_start_val))
-        return computed_ranges
+            mapped_intervals.extend(self.map_interval(interval))
+        return mapped_intervals
 
+    # interval = [x,y] x included y included
+    def map_interval(self, interval):
+        source_ranges = []
+        for range in self.ranges:
+            range_start = range[1]
+            range_end = range[1]+range[2]-1
+            source_ranges.append((range_start,range_end))
+        source_intervals = []
+        (int_start,int_end) = interval
+        for (range_start,range_end) in source_ranges:
+            if int_start > range_end:
+                continue
+            if int_start < range_start:
+                if int_end < range_start:
+                    source_intervals.append((int_start,int_end))
+                    break
+                source_intervals.append((int_start,range_start-1))
+                int_start = range_start
+            if int_end <= range_end:
+                source_intervals.append((int_start,int_end))
+                break
+            source_intervals.append((int_start,range_end))
+            int_start = range_end+1
+        if source_intervals == []:
+            source_intervals =[interval]
+        dest_intervals = []
+        for (start,end) in source_intervals:
+            dest_intervals.append((self.map_value(start),self.map_value(end)))
+
+        return dest_intervals
 
 
             
     
     
 if __name__ == "__main__":
-    f = open("/media/alexandre/DATA/Sources/aoc2023/tests/day5.txt", "r")
+    f = open("D:\\Sources\\sample_projects\\aoc2023\\tests\\day5.txt", "r")
     txt = f.read()
     almanac = Almanac(txt)
     print(almanac.min_location())

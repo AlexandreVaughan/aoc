@@ -34,13 +34,20 @@ humidity-to-location map:
 60 56 37
 56 93 4"""
 
+MAP = """50 98 2
+52 50 48"""
+
+MAP2="""0 15 37
+37 52 2
+39 0 15
+"""
+
 def test_seeds():
     almanac = Almanac(TEST_ALMANAC)
     assert almanac.seeds == {79,14,55,13}
 
 def test_generic_map():
-    MAP = """50 98 2
-52 50 48"""
+
     almanac_map = AlmanacMap(MAP)
     assert almanac_map.map_value(0) == 0
     assert almanac_map.map_value(1) == 1
@@ -66,3 +73,12 @@ def test_location_map():
 def test_min_location_seed_range():
     almanac = Almanac(TEST_ALMANAC, True)
     assert almanac.min_location() == 46
+
+def test_map_interval():
+    almanac_map = AlmanacMap(MAP)
+    assert almanac_map.map_interval((0,10)) == [(0,10)]
+    assert almanac_map.map_interval((100,10)) == [(100,10)]
+    assert almanac_map.map_interval((12,54)) == [(12,49),(52,56)]
+    assert almanac_map.map_interval((55,67)) == [(57,69)]
+    almanac_map = AlmanacMap(MAP2)
+    assert almanac_map.map_interval((57,69)) == [(57,69)]
