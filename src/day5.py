@@ -137,11 +137,11 @@ class AlmanacMap:
 
     # interval = [x,y] x included y included
     def map_interval(self, interval):
-        source_ranges = []
-        for range in self.ranges:
-            range_start = range[1]
-            range_end = range[1]+range[2]-1
-            source_ranges.append((range_start,range_end))
+        source_ranges = self._list_source_ranges()
+        source_intervals = self._split_interval(interval, source_ranges)
+        return self._map_interval_direct(source_intervals)
+
+    def _split_interval(self, interval, source_ranges):
         source_intervals = []
         (int_start,int_end) = interval
         for (range_start,range_end) in source_ranges:
@@ -160,6 +160,17 @@ class AlmanacMap:
             int_start = range_end+1
         if source_intervals == []:
             source_intervals =[interval]
+        return source_intervals
+
+    def _list_source_ranges(self):
+        source_ranges = []
+        for range in self.ranges:
+            range_start = range[1]
+            range_end = range[1]+range[2]-1
+            source_ranges.append((range_start,range_end))
+        return source_ranges
+
+    def _map_interval_direct(self, source_intervals):
         dest_intervals = []
         for (start,end) in source_intervals:
             dest_intervals.append((self.map_value(start),self.map_value(end)))
