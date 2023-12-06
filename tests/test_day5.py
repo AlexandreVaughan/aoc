@@ -42,17 +42,17 @@ def test_generic_map():
     MAP = """50 98 2
 52 50 48"""
     almanac_map = AlmanacMap(MAP)
-    assert almanac_map.map(0) == 0
-    assert almanac_map.map(1) == 1
-    assert almanac_map.map(48) == 48
-    assert almanac_map.map(49) == 49
-    assert almanac_map.map(50) == 52
-    assert almanac_map.map(51) == 53
-    assert almanac_map.map(53) == 55
-    assert almanac_map.map(96) == 98
-    assert almanac_map.map(97) == 99
-    assert almanac_map.map(98) == 50
-    assert almanac_map.map(99) == 51
+    assert almanac_map.map_value(0) == 0
+    assert almanac_map.map_value(1) == 1
+    assert almanac_map.map_value(48) == 48
+    assert almanac_map.map_value(49) == 49
+    assert almanac_map.map_value(50) == 52
+    assert almanac_map.map_value(51) == 53
+    assert almanac_map.map_value(53) == 55
+    assert almanac_map.map_value(96) == 98
+    assert almanac_map.map_value(97) == 99
+    assert almanac_map.map_value(98) == 50
+    assert almanac_map.map_value(99) == 51
 
 def test_soil_map():
     almanac = Almanac(TEST_ALMANAC)
@@ -61,3 +61,8 @@ def test_soil_map():
 def test_location_map():
     almanac = Almanac(TEST_ALMANAC)
     assert almanac.to_location() == {82,43,86,35}
+
+
+def test_min_location_seed_range():
+    almanac = Almanac(TEST_ALMANAC, True)
+    assert almanac.min_location() == 46
