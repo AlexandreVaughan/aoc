@@ -53,12 +53,9 @@ def test_is_stronger_same_type():
     assert not hand1.is_stronger(hand2)
 
 def test_is_stronger_same_type_joker():
-
     hand1 = Hand("JKKK2",joker_rule_active=True)
     hand2 = Hand("QQQQ2", joker_rule_active=True)
     assert not hand1.is_stronger(hand2)
-
-
 
 HAND_LIST_DEF = """32T3K 765
 T55J5 684

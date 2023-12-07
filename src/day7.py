@@ -16,8 +16,6 @@ class Hand:
         self.bid = 0
         self.type = self._find_type()
 
-
-    
     def is_stronger(self,other):
         if  self.type != other.type:
             return self.type > other.type
