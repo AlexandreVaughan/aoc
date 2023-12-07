@@ -23,4 +23,5 @@ def is_marker(potential_marker):
 
 with open('day6.txt') as file:
     stream = file.readline()
+    print(find_marker_end(stream))
     print(find_marker_end(stream,MESSAGE_MARKER_SIZE))
