@@ -16,6 +16,15 @@ def test_hand_type():
     hand = Hand("23456")
     assert hand.type == HIGH_CARD
 
+def test_hand_type_joker():
+    hand = Hand("QJJQ2")
+    assert hand.type == TWO_PAIR
+    hand = Hand("QJJQ2", joker_rule_active=True)
+    assert hand.type == FOUR_OF_A_KIND
+    hand = Hand("JJJJJ", joker_rule_active=True)
+    assert hand.type == FIVE_OF_A_KIND
+
+
 def test_is_stronger_different_types():
     hand1 = Hand("AAAAA")
     hand2 = Hand("TTT98")
@@ -43,6 +52,14 @@ def test_is_stronger_same_type():
     assert hand2.is_stronger(hand1)
     assert not hand1.is_stronger(hand2)
 
+def test_is_stronger_same_type_joker():
+
+    hand1 = Hand("JKKK2",joker_rule_active=True)
+    hand2 = Hand("QQQQ2", joker_rule_active=True)
+    assert not hand1.is_stronger(hand2)
+
+
+
 HAND_LIST_DEF = """32T3K 765
 T55J5 684
 KK677 28
@@ -67,3 +84,9 @@ def test_hand_list_winnings():
     hand_list = HandList(HAND_LIST_DEF)
     hand_list.rank_hands()
     assert hand_list.winnings() == 6440
+
+
+def test_hand_list_winnings_joker():
+    hand_list = HandList(HAND_LIST_DEF, joker_rule_active=True)
+    hand_list.rank_hands()
+    assert hand_list.winnings() == 5905
