@@ -17,11 +17,6 @@ class Pipe:
     def has_vertical_component(self):
         return self.definition in "|JL"
 
-    def is_starting_point(self):
-        return self.definition == "S"
-
-
-
 class PipeGrid:
     def __init__(self, definition:str) -> None:
         self.grid = []
@@ -84,7 +79,6 @@ class PipeGrid:
             pipe.distance = distance
             for direction in self.directions(x,y):
                 queue.put((*(_move(x,y,direction)),distance+1))
-
         
     def max_distance(self):
         max_dist = 0
@@ -104,14 +98,11 @@ class PipeGrid:
                 if pipe.in_loop():
                     if pipe.has_vertical_component():
                         enclosed = not enclosed
-                    if pipe.is_starting_point() and NORTH in pipe.allowed_directions:
+                    if (x,y) == self.starting_point and NORTH in pipe.allowed_directions:
                         enclosed = not enclosed
                 else:
                     count += int(enclosed)
         return count
-
-
-    
 
 
 def _allowed_directions(pipe: str):
