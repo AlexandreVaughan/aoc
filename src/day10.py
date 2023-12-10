@@ -9,6 +9,18 @@ class Pipe:
     def __init__(self,definition: str) -> None:
         self.allowed_directions = _allowed_directions(definition)
         self.distance = -1
+        self.definition = definition
+
+    def in_loop(self):
+        return self.distance != -1
+    
+    def has_vertical_component(self):
+        return self.definition in "|JL"
+
+    def is_starting_point(self):
+        return self.definition == "S"
+
+
 
 class PipeGrid:
     def __init__(self, definition:str) -> None:
@@ -52,7 +64,7 @@ class PipeGrid:
             return -1
         return pipe.distance
     
-    def _pipe_at(self,x,y):
+    def _pipe_at(self,x,y) -> Pipe:
         if x < 0 or y < 0:
             return None
         if x >= len(self.grid[0]) or y >= len(self.grid):
@@ -80,6 +92,23 @@ class PipeGrid:
             for pipe in line:
                 max_dist = max(max_dist,pipe.distance)
         return max_dist
+    
+    def count_enclosed(self):
+        count=0
+        max_y = len(self.grid)
+        max_x = len(self.grid[0])
+        for y in range(max_y):
+            enclosed = False
+            for x in range(max_x):
+                pipe = self._pipe_at(x,y)
+                if pipe.in_loop():
+                    if pipe.has_vertical_component():
+                        enclosed = not enclosed
+                    if pipe.is_starting_point() and NORTH in pipe.allowed_directions:
+                        enclosed = not enclosed
+                else:
+                    count += int(enclosed)
+        return count
 
 
     
@@ -122,3 +151,4 @@ if __name__ == "__main__":
     pipe_grid = PipeGrid(txt)
     pipe_grid.find_distances()
     print(pipe_grid.max_distance())
+    print(pipe_grid.count_enclosed())
