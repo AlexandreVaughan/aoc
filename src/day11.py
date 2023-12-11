@@ -1,5 +1,4 @@
 GALAXY='#'
-EMPTY_SPACE = '.'
 
 class ImageField:
     def __init__(self,definition) -> None:
@@ -39,9 +38,6 @@ class ImageField:
                 newy += expansion_rate-1
         return (newx,newy)
 
-
-
-
     def has_galaxy(self,x,y):
         return (x,y) in self.galaxies
 
@@ -55,22 +51,12 @@ class ImageField:
                 return False
         return True
 
-    
     def _is_empty_column(self,x):
         for galaxy in self.galaxies:
             (gx,_) = galaxy
             if gx == x:
                 return False
         return True
-    
-    def _add_line_after(self,y):
-        (max_x,_) = self.size()
-        line = EMPTY_SPACE*max_x
-        self.image.insert(y+1,line)
-
-    def _add_column_after(self,x):
-        for line in self.image:
-            line.insert(x+1,EMPTY_SPACE)
 
     def find_galaxies(self):
         return self.galaxies
