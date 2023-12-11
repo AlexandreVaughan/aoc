@@ -51,3 +51,12 @@ def test_sum_distance():
     image_field = ImageField(IMAGE_FIELD)
     image_field.expand()
     assert image_field.sum_distance() == 374
+
+
+def test_sum_distance_different_offsets():
+    image_field = ImageField(IMAGE_FIELD)
+    image_field.expand(10)
+    assert image_field.sum_distance() == 1030
+    image_field = ImageField(IMAGE_FIELD)
+    image_field.expand(100)
+    assert image_field.sum_distance() == 8410
