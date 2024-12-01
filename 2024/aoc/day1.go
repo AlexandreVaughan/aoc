@@ -38,6 +38,27 @@ func ReconcileDistance(idList1 []int, idList2 []int) int {
 	return sum
 }
 
+type CountDictionary = map[int]int
+
+func ConstructCountDictionary(idList []int) CountDictionary {
+	var countDic CountDictionary = make(CountDictionary)
+	for _, id := range idList {
+		countDic[id] += 1
+	}
+	return countDic
+}
+
+func SimilarityScore(idList1 []int, idList2 []int) int {
+	countDic1 := ConstructCountDictionary(idList1)
+	countDic2 := ConstructCountDictionary(idList2)
+	sum := 0
+	for id, countList1 := range countDic1 {
+		countList2 := countDic2[id]
+		sum += id * countList1 * countList2
+	}
+	return sum
+}
+
 func ReadLists(fileName string) ([]int, []int) {
 	file, _ := os.Open(fileName)
 	defer file.Close()
