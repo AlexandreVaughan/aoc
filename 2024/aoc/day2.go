@@ -18,34 +18,60 @@ func IntSign(n int) int {
 	return 0
 }
 
-func (report *Report) IsSafe() bool {
+func (report *Report) removeAndCopy(index int) Report {
+	if index < 0 || index >= len(*report) {
+		// Return a copy of the original slice if the index is invalid
+		result := make([]int, len(*report))
+		copy(result, *report)
+		return result
+	}
+
+	// Create a new slice with the element removed
+	result := append([]int{}, (*report)[:index]...) // Copy the part before the index
+	result = append(result, (*report)[index+1:]...) // Append the part after the index
+	return result
+}
+
+func (report *Report) IsSafe(allowError bool) bool {
 
 	previousValue := -1
-	direction := -2
+	previousDirection := -2
 
 	for index, value := range *report {
-		if index == 0 {
+		if previousValue == -1 {
 			previousValue = value
 			continue
 		}
-		delta := value - previousValue
-
-		if direction == -2 {
-			direction = IntSign(delta)
-		} else if direction != IntSign(delta) {
-			return false
+		isSafe, direction := isSafeValue(value, previousValue, previousDirection)
+		if !isSafe {
+			if !allowError {
+				return false
+			}
+			report1 := report.removeAndCopy(index)
+			report2 := report.removeAndCopy(index - 1)
+			report3 := report.removeAndCopy(index - 2)
+			return report1.IsSafe(false) || report2.IsSafe(false) || report3.IsSafe(false)
 		}
 
-		absDelta := IntAbs(delta)
-
-		if absDelta < 1 || absDelta > 3 {
-			return false
-		}
 		previousValue = value
-
+		previousDirection = direction
 	}
 
 	return true
+}
+
+func isSafeValue(value int, previousValue int, previousDirection int) (bool, int) {
+	delta := value - previousValue
+	absDelta := IntAbs(delta)
+	direction := IntSign(delta)
+
+	if previousDirection != -2 && previousDirection != direction {
+		return false, direction
+	}
+	if absDelta < 1 || absDelta > 3 {
+		return false, direction
+	}
+	return true, direction
 }
 
 type Reports []Report
@@ -74,10 +100,10 @@ func ReadReports(fileName string) Reports {
 	return reports
 }
 
-func (reports *Reports) SafeCount() int {
+func (reports *Reports) SafeCount(allowError bool) int {
 	count := 0
 	for _, report := range *reports {
-		if report.IsSafe() {
+		if report.IsSafe(allowError) {
 			count++
 		}
 	}
