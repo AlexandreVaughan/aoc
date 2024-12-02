@@ -9,7 +9,7 @@ import (
 )
 
 // Abs returns the absolute value of x.
-func intAbs(x int) int {
+func IntAbs(x int) int {
 	if x < 0 {
 		return -x
 	}
@@ -17,7 +17,7 @@ func intAbs(x int) int {
 }
 
 func Distance(x, y int) int {
-	return intAbs(x - y)
+	return IntAbs(x - y)
 }
 
 func Sort(idList []int) {
