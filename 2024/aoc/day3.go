@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 	"strconv"
-	"strings"
+	"unicode"
 )
 
 type Mul struct {
@@ -12,57 +12,113 @@ type Mul struct {
 	operand2 int
 }
 
-func FindMul(corruptedString string) []Mul {
-	indexStart := 0
+type State int
 
-	workingString := corruptedString
-	startstring := "mul("
-	endstring := ")"
+const (
+	InitialState State = iota
+	DoState
+	DontState
+	MulState
+)
 
-	var result []Mul
+func ParseMul(input string, ignoreDont bool) []Mul {
+	var muls []Mul
+	state := InitialState
+	i := 0
+	length := len(input)
 
-	for {
-		initialString := workingString
-		indexStart = strings.Index(workingString, startstring) // Find the first occurrence of the substring
-		if indexStart == -1 {
-			break // No more occurrences
-		} // Store the occurrence index
-		indexStart += len(startstring)
-		workingString = workingString[indexStart:]
-		indexEnd := strings.Index(workingString, endstring)
-		if indexEnd == -1 {
-			continue // No more occurrences
-		} // Store the occurrence index
-		indexEnd += indexStart
-		stringPair := initialString[indexStart:indexEnd]
-		fields := strings.Split(stringPair, ",")
-		if len(fields) != 2 {
+	for i < length {
+		if i+4 <= length && input[i:i+4] == "do()" {
+			state = DoState
+			i += 4
 			continue
 		}
-		var mul Mul
-		intVal, err := strconv.Atoi(fields[0])
-		if err != nil {
-			continue
-		}
-		mul.operand1 = intVal
-		intVal, err = strconv.Atoi(fields[1])
-		if err != nil {
-			continue
-		}
-		mul.operand2 = intVal
-		result = append(result, mul)
-		workingString = workingString[indexEnd-indexStart+len(endstring):]
 
+		if i+7 <= length && input[i:i+7] == "don't()" {
+			state = DontState
+			i += 7
+			continue
+		}
+
+		if i+4 <= length && input[i:i+4] == "mul(" {
+			j := i + 4 // Start looking for numbers inside `mul(`
+			closingIndex := j
+			for closingIndex < length && input[closingIndex] != ')' {
+				closingIndex++
+			}
+
+			if closingIndex < length && input[closingIndex] == ')' {
+				// Extract arguments
+				args := input[j:closingIndex]
+				nums := parseMulArguments(args)
+
+				if len(nums) == 2 {
+					if !ignoreDont || state != DontState {
+						state = MulState
+						muls = append(muls, Mul{nums[0], nums[1]})
+					}
+					i = closingIndex + 1
+				} else {
+					i++
+				}
+				continue
+			} else {
+				i++
+				continue
+			}
+		}
+
+		i++
 	}
-	return result
+	return muls
+}
+
+func parseMulArguments(args string) []int {
+	var nums []int
+	parts := splitArgsByComma(args)
+	for _, part := range parts {
+		if hasNonNumeric(part) {
+			return []int{}
+		}
+		if num, err := strconv.Atoi(part); err == nil {
+			nums = append(nums, num)
+		}
+	}
+	return nums
+}
+
+func splitArgsByComma(args string) []string {
+	var parts []string
+	current := ""
+	for _, ch := range args {
+		if ch == ',' {
+			parts = append(parts, current)
+			current = ""
+		} else {
+			current += string(ch)
+		}
+	}
+	if current != "" {
+		parts = append(parts, current)
+	}
+	return parts
+}
+
+func hasNonNumeric(s string) bool {
+	for _, ch := range s {
+		if !unicode.IsDigit(ch) {
+			return true
+		}
+	}
+	return false
 }
 
 func (mul *Mul) value() int {
 	return mul.operand1 * mul.operand2
 }
 
-func MulSum(corruptedString string) int {
-	muls := FindMul(corruptedString)
+func MulSum(corruptedString string, ignoreDont bool) int {
+	muls := ParseMul(corruptedString, ignoreDont)
 	sum := 0
 	for _, mul := range muls {
 		sum += mul.value()
@@ -70,8 +126,8 @@ func MulSum(corruptedString string) int {
 	return sum
 }
 
-func ReadMulSum(filePath string) int {
+func ReadMulSum(filePath string, ignoreDont bool) int {
 	file, _ := os.Open(filePath)
 	content, _ := io.ReadAll(file)
-	return MulSum(string(content))
+	return MulSum(string(content), ignoreDont)
 }

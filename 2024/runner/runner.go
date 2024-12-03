@@ -18,7 +18,9 @@ func main() {
 	fmt.Println("Day2 - Safe report count (V1) : ", reports.SafeCount(false))
 	fmt.Println("Day2 - Safe report count (V2) : ", reports.SafeCount(true))
 
-	mulsum := aoc2024.ReadMulSum("./day3.txt")
-	fmt.Println("Day3 - Mulsum : ", mulsum)
+	mulsum := aoc2024.ReadMulSum("./day3.txt", false)
+	fmt.Println("Day3 - Mulsum (all) : ", mulsum)
+	mulsum = aoc2024.ReadMulSum("./day3.txt", true)
+	fmt.Println("Day3 - Mulsum (ignore) : ", mulsum)
 
 }
